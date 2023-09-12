@@ -7,7 +7,10 @@ export default function Home() {
       <div className="relative flex place-items-center before:absolute text-2xl">
         Web3 AI(LOGO HERE)
       </div>
-
+      <div className="flex items-center justify-between mx-auto p-4 absolute top-0 right-0">
+           {/**Import the wallet component right here - I think i'll have to pull wallet out since I can't pass state down with it.. bummer but oh well*/}
+          <button className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Connect Wallet Stub</button>
+      </div>
       <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
         <a
           href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
