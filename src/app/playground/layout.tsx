@@ -8,7 +8,7 @@ export default function PlaygoundLayout({
 }) {
     return(
         <section>
-            {/**Shared Playgound Nav Here*/}
+            {/**Nav List Items should maybe be dynamic*/}
            <PlaygoundNav />
             {children}
         </section>
