@@ -50,7 +50,7 @@ export const AppBar: React.FC = () => {
           />
           <NavElement
             label="My Account"
-            href="/my-account"
+            href="/account"
             navigationStarts={() => setIsNavOpen(false)}
           />
           <WalletMultiButtonDynamic className="btn-ghost btn-sm rounded-btn text-lg mr-6 " />
