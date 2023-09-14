@@ -10,7 +10,7 @@ export const AccountView: FC = ({ }) => {
         <h1 className="text-center text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-fuchsia-500 mt-10 mb-8">
           My Account
         </h1>
-        <div className="text-left">
+        <div>
             <UserDetails />
         </div>
       </div>
