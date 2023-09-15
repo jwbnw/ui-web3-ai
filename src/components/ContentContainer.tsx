@@ -6,6 +6,7 @@ interface Props {
   children: React.ReactNode;
 }
 
+// TODO: There is a lot of redundancy around this component, fix it. 
 export const ContentContainer: React.FC<Props> = ({ children }) => {
 
   return (
