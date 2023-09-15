@@ -12,6 +12,7 @@ const Playground: NextPage = (props) => {
           content="Playground Page"
         />
       </Head>
+      {/*Maybe PlaygroundSideBar should go here but not that big of a deal*/}
       <PlaygroundView />
     </div>
   );
