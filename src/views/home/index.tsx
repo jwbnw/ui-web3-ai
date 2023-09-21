@@ -1,6 +1,8 @@
 // Next, React
 import { FC, useEffect, useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
 
 // Wallet
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
@@ -11,6 +13,12 @@ import pkg from '../../../package.json';
 
 // Store
 import useUserSOLBalanceStore from '../../stores/useUserSOLBalanceStore';
+
+const WalletMultiButtonDynamic = dynamic(
+  async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+  { ssr: false }
+);
+
 
 export const HomeView: FC = ({ }) => {
   const wallet = useWallet();
@@ -41,13 +49,12 @@ export const HomeView: FC = ({ }) => {
           <p className='text-slate-500 text-2x1 leading-relaxed'>Powered By Solana</p>
         </h4>
         <div className="relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-indigo-500 rounded-lg blur opacity-40 animate-tilt"></div>
-          <div className="max-w-md mx-auto mockup-code bg-primary border-2 border-[#5252529f] p-6 px-10 my-2">
-            <pre data-prefix=">">
-              <code className="truncate">{`Create Account Btn Here`} </code>
-            </pre>
-          </div>
-        </div>
+        {/*Once we have the thrid option of sign in we'll abstract into a render function as we'll have 3 options*/}
+            { !wallet.publicKey ? 
+            <WalletMultiButtonDynamic className="btn btn-ghost btn-wide" />
+              : <button className="btn btn-xl btn-ghost btn-wide">Create Account</button>
+          }
+            </div>
         <div className="flex flex-col mt-2">
           <RequestAirdrop />
           <h4 className="md:w-full text-2xl text-slate-300 my-2">
