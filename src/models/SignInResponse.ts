@@ -1,4 +1,4 @@
-export default interface CreateAccountResponse {
+export default interface SignInResponse {
     userId: string;
     wallet: string;
     username: string;
