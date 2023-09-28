@@ -4,22 +4,26 @@ import axios from "axios";
 import CreateAccountResponse from "models/CreateAccountResponse";
 import { notify } from "../utils/notifications";
 import bs58 from 'bs58';
-import { CreateAccount, SignIn } from "services/UserService";
+import { CreateAccount, SignIn, CreateOrUpdateLocalUserStorage } from "services/UserService";
 import CreateAccountRequest from "models/CreateAccountRequest";
 import SignInRequest from "models/SignInRequest";
+import IUser from "models/IUser";
 
 type UserDetailProps = {
   hasAccount: boolean;
   hasToken: boolean;
+  user: IUser;
 }
 // TODO send props(hasAccount, hasToken) in to know account state if we have a connected wallet..
-export const UserDetails: FC<UserDetailProps> = ({hasAccount, hasToken}) => {
+export const UserDetails: FC<UserDetailProps> = ({hasAccount, hasToken, user}) => {
   
   // Ok so fixed this. Now the issue is I lose the wallet and username state on the re-render :(
-  // need to figure out how to persist that in the client..(pass up to parent?)
+  // need to figure out how to persist that in the client..(pass up to parent?) then I'm done with initial account work phew!
   useEffect(()=> {
+    setUserName(user.username);
+    setUserWallet(user.wallet);
     setSignedIn(hasToken);
-  },[hasToken])
+  },[hasToken, user])
 
   const [signedIn, setSignedIn] = useState(hasToken);
   
@@ -74,6 +78,7 @@ export const UserDetails: FC<UserDetailProps> = ({hasAccount, hasToken}) => {
       setSignedIn(true);
       setUserWallet(createAccountResult.wallet);
       setUserName(createAccountResult.wallet);
+      CreateOrUpdateLocalUserStorage(createAccountResult);
       localStorage.setItem('X-User-Token', createAccountResult.token); //probably move to a cookie at some point.
     }
     else
@@ -99,7 +104,7 @@ export const UserDetails: FC<UserDetailProps> = ({hasAccount, hasToken}) => {
       setSignedIn(true);
       setUserWallet(signInResult.wallet);
       setUserName(signInResult.wallet);
-      localStorage.setItem('X-User-Token', signInResult.token); //probably move to a cookie at some point.
+      CreateOrUpdateLocalUserStorage(signInResult);
     }
     else
     {
@@ -120,7 +125,7 @@ export const UserDetails: FC<UserDetailProps> = ({hasAccount, hasToken}) => {
       console.log("here??")
       return (
         <div className="text-lg text-left">
-        <div className="p-4">Username: {userWallet} </div>
+        <div className="p-4">Username: {userName} </div>
         <div className="p-4">Wallet: {userWallet} </div>
         <div className="p-4">Email: (Coming Soon)</div>
         <div className="p-4">Phone: (Coming Soon)</div>

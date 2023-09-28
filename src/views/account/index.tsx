@@ -4,19 +4,24 @@ import { UserDetails } from "../../components/UserDetails";
 import { HasAccount} from "services/UserService";
 import HasAccountRequest from "models/HasAccountRequest";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { GetLocalUserStorage } from "services/UserService";
+import IUser from "models/IUser";
+
 
 
 
 export const AccountView: FC = ({ }) => {
 
-
+  const [incomingUser, setIncomingUser] = useState<IUser>({
+    wallet: "",
+    phoneNumber: "",
+    email: "",
+    username: ""
+  });
   const [tokenExists, setTokenExists] = useState(false);
   const [hasKnownAccount, setHasKnownAccount] = useState(false);
-
   const { publicKey, signMessage } = useWallet();
 
-  let hasTokenInStorage;
-  let hasPubKey
 
   useEffect(() => {
     let tokenInStorage = localStorage.getItem('X-User-Token');
@@ -24,6 +29,7 @@ export const AccountView: FC = ({ }) => {
     console.log('token in localStorage from useEffect', tokenInStorage)
     if (tokenInStorage !== null){
       handleTokenExists();
+      handleUserCheck();
     }
     else if(publicKey){
       callHasKnownAccount();
@@ -40,6 +46,12 @@ export const AccountView: FC = ({ }) => {
     setHasKnownAccount(accountCheck.hasAccount)
   }
 
+  function handleUserCheck(){
+    var test = GetLocalUserStorage();
+    console.log("do we have it?", test)
+    setIncomingUser(GetLocalUserStorage());
+  }
+
   function handleTokenExists(){
     console.log("in iff");
       setTokenExists(true);
@@ -54,7 +66,7 @@ export const AccountView: FC = ({ }) => {
           My Account
         </h1>
         <div>
-            <UserDetails hasAccount={hasKnownAccount} hasToken={tokenExists} />
+            <UserDetails hasAccount={hasKnownAccount} hasToken={tokenExists} user={incomingUser} />
         </div>
       </div>
     </div>
