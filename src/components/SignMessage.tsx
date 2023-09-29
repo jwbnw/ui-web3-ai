@@ -20,6 +20,10 @@ export const SignMessage: FC = () => {
             const signature = await signMessage(message);
             // Verify that the bytes were signed using the private key that matches the known public key
             if (!verify(signature, message, publicKey.toBytes())) throw new Error('Invalid signature!');
+
+            var encoded = bs58.encode(signature);
+            console.log("signature: ", encoded);
+
             notify({ type: 'success', message: 'Sign message successful!', txid: bs58.encode(signature) });
         } catch (error: any) {
             notify({ type: 'error', message: `Sign Message failed!`, description: error?.message });
