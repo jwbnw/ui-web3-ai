@@ -51,7 +51,7 @@ export const UserDetails: FC<UserDetailProps> = ({
 
       var encodedSignedHash = bs58.encode(signedHash);
 
-      console.log("signature at signServerChallenge(): ", encodedSignedHash);
+      console.log("encoded signature at signServerChallenge(): ", encodedSignedHash);
       notify({
         type: "success",
         message: "Sign message successful!",

@@ -20,7 +20,6 @@ export const AccountView: FC = ({}) => {
   useEffect(() => {
     let tokenInStorage = localStorage.getItem("X-User-Token");
 
-    console.log("token in localStorage from useEffect", tokenInStorage);
     if (tokenInStorage !== null) {
       handleTokenExists();
       handleUserCheck();
@@ -41,15 +40,12 @@ export const AccountView: FC = ({}) => {
 
   function handleUserCheck() {
     var test = GetLocalUserStorage();
-    console.log("do we have it?", test);
     setIncomingUser(GetLocalUserStorage());
   }
 
   function handleTokenExists() {
-    console.log("in iff");
     setTokenExists(true);
     setHasKnownAccount(true); // need to figure out a better way to do auth. Not sure about using local storage in general.
-    console.log("in useEffect tokenExists:", tokenExists);
   }
 
   return (
