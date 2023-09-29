@@ -1,10 +1,12 @@
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { FC, useCallback, useEffect, useState } from "react";
-import axios from "axios";
-import CreateAccountResponse from "models/CreateAccountResponse";
 import { notify } from "../utils/notifications";
-import bs58 from 'bs58';
-import { CreateAccount, SignIn, CreateOrUpdateLocalUserStorage } from "services/UserService";
+import bs58 from "bs58";
+import {
+  CreateAccount,
+  SignIn,
+  CreateOrUpdateLocalUserStorage,
+} from "services/UserService";
 import CreateAccountRequest from "models/CreateAccountRequest";
 import SignInRequest from "models/SignInRequest";
 import IUser from "models/IUser";
@@ -13,131 +15,129 @@ type UserDetailProps = {
   hasAccount: boolean;
   hasToken: boolean;
   user: IUser;
-}
-// TODO send props(hasAccount, hasToken) in to know account state if we have a connected wallet..
-export const UserDetails: FC<UserDetailProps> = ({hasAccount, hasToken, user}) => {
-  
-  // Ok so fixed this. Now the issue is I lose the wallet and username state on the re-render :(
-  // need to figure out how to persist that in the client..(pass up to parent?) then I'm done with initial account work phew!
-  useEffect(()=> {
+};
+
+export const UserDetails: FC<UserDetailProps> = ({
+  hasAccount,
+  hasToken,
+  user,
+}) => {
+  useEffect(() => {
     setUserName(user.username);
     setUserWallet(user.wallet);
     setSignedIn(hasToken);
-  },[hasToken, user])
+  }, [hasToken, user]);
 
   const [signedIn, setSignedIn] = useState(hasToken);
-  
-  
+
   // I can/should probably combine these into a user model
   const [userWallet, setUserWallet] = useState("");
   const [userName, setUserName] = useState("");
   const [userPhone, setUserPhone] = useState("");
   const [userEmail, setUserEmail] = useState("");
- 
+
   const { publicKey, signMessage } = useWallet();
 
-
-
-
   const signServerChallenge = useCallback(async () => {
-    try{
+    try {
+      if (!publicKey) throw new Error("Wallet not  connected");
+      if (!signMessage)
+        throw new Error(
+          'Wallet does not support message signing! - "See Wallet Sign Unsupported" in docs'
+        );
 
-      if (!publicKey) throw new Error('Wallet not  connected');
-      if (!signMessage) throw new Error('Wallet does not support message signing! - "See Wallet Sign Unsupported" in docs');
-      
-      const message = new TextEncoder().encode('Hello, world!');
+      const message = new TextEncoder().encode("Hello, world!");
       const signedHash = await signMessage(message);
 
       var encodedSignedHash = bs58.encode(signedHash);
 
-      console.log("signature at signServerChallenge(): ", encodedSignedHash)
-      notify({ type: 'success', message: 'Sign message successful!', txid: bs58.encode(signedHash) });
+      console.log("signature at signServerChallenge(): ", encodedSignedHash);
+      notify({
+        type: "success",
+        message: "Sign message successful!",
+        txid: bs58.encode(signedHash),
+      });
 
       return encodedSignedHash;
     } catch (err: any) {
-      notify({ type: 'error', message: `Sign Message failed!`, description: err?.message });
-      console.log('error', `Sign Message failed! ${err?.message}`);
+      notify({
+        type: "error",
+        message: `Sign Message failed!`,
+        description: err?.message,
+      });
+      console.log("error", `Sign Message failed! ${err?.message}`);
     }
-  }, [publicKey, notify, signMessage])
+  }, [publicKey, notify, signMessage]);
 
-  
-  async function callCreateAccount(){
-
+  async function callCreateAccount() {
     const signedHashValue = await signServerChallenge();
     let wallet = publicKey.toString();
 
     const createAccountRequest: CreateAccountRequest = {
-      signedHash: signedHashValue, 
-      publicKey: wallet
-    }
+      signedHash: signedHashValue,
+      publicKey: wallet,
+    };
 
     const createAccountResult = await CreateAccount(createAccountRequest);
 
-    if(createAccountResult.userId !== '')
-    {
+    if (createAccountResult.userId !== "") {
       setSignedIn(true);
       setUserWallet(createAccountResult.wallet);
       setUserName(createAccountResult.wallet);
       CreateOrUpdateLocalUserStorage(createAccountResult);
-      localStorage.setItem('X-User-Token', createAccountResult.token); //probably move to a cookie at some point.
-    }
-    else
-    {
-      console.log('Did not recieve user id from backend something went wrong');
+      localStorage.setItem("X-User-Token", createAccountResult.token); //probably move to a cookie at some point.
+    } else {
+      console.log("Did not recieve user id from backend something went wrong");
     }
   }
 
-  async function callSignIn(){
-
+  async function callSignIn() {
     const signedHashValue = await signServerChallenge();
     let wallet = publicKey.toString();
 
     const signInRequest: SignInRequest = {
-      signedHash: signedHashValue, 
-      publicKey: wallet
-    }
+      signedHash: signedHashValue,
+      publicKey: wallet,
+    };
 
     const signInResult = await SignIn(signInRequest);
 
-    if(signInResult.userId !== '')
-    {
+    if (signInResult.userId !== "") {
       setSignedIn(true);
       setUserWallet(signInResult.wallet);
       setUserName(signInResult.wallet);
       CreateOrUpdateLocalUserStorage(signInResult);
-    }
-    else
-    {
-      console.log('Did not recieve user id from backend something went wrong');
+    } else {
+      console.log("Did not recieve user id from backend something went wrong");
     }
   }
 
   const createAccount = () => {
     callCreateAccount();
-  }
+  };
 
   const signIn = () => {
     callSignIn();
-  }
+  };
 
   const ShouldShowUserDetail = () => {
     if (publicKey && signedIn) {
-      console.log("here??")
+      console.log("here??");
       return (
         <div className="text-lg text-left">
-        <div className="p-4">Username: {userName} </div>
-        <div className="p-4">Wallet: {userWallet} </div>
-        <div className="p-4">Email: (Coming Soon)</div>
-        <div className="p-4">Phone: (Coming Soon)</div>
-        <div className="flex justify-center pt-4">
-          <button className="btn btn-primary w-3/4">Edit</button>
+          <div className="p-4">Username: {userName} </div>
+          <div className="p-4">Wallet: {userWallet} </div>
+          <div className="p-4">Email: (Coming Soon)</div>
+          <div className="p-4">Phone: (Coming Soon)</div>
+          <div className="flex justify-center pt-4">
+            <button className="btn btn-primary w-3/4">Edit</button>
+          </div>
         </div>
-      </div>
       );
     } else if (publicKey) {
       console.log("signed in userDetails:", signedIn);
 
-            console.log("or here??");
+      console.log("or here??");
 
       return (
         <div>
@@ -150,12 +150,15 @@ export const UserDetails: FC<UserDetailProps> = ({hasAccount, hasToken, user}) =
             </div>
           </div>
           <div className="flex justify-center pt-4">
-            {!hasAccount 
-            ? <button className="btn btn-primary w-3/4" onClick={createAccount}>
-                Create Account </button>
-            : <button className="btn btn-primary w-3/4" onClick={signIn}>
-                Sign In </button>
-            }
+            {!hasAccount ? (
+              <button className="btn btn-primary w-3/4" onClick={createAccount}>
+                Create Account{" "}
+              </button>
+            ) : (
+              <button className="btn btn-primary w-3/4" onClick={signIn}>
+                Sign In{" "}
+              </button>
+            )}
           </div>
         </div>
       );
@@ -168,11 +171,12 @@ export const UserDetails: FC<UserDetailProps> = ({hasAccount, hasToken, user}) =
               <div className="p-4">Wallet:</div>
               <div className="p-4">Email: (Coming Soon)</div>
               <div className="p-4">Phone: (Coming Soon)</div>
-              <div className="flex justify-center pt-4">
-              </div>
+              <div className="flex justify-center pt-4"></div>
             </div>
           </div>
-          <button className="btn btn-primary w-3/4">Connect Wallet (make sol connect wallet btn)</button>
+          <button className="btn btn-primary w-3/4">
+            Connect Wallet (make sol connect wallet btn)
+          </button>
         </div>
       );
     }
