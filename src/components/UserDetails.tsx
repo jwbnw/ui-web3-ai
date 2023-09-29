@@ -46,7 +46,7 @@ export const UserDetails: FC<UserDetailProps> = ({
           'Wallet does not support message signing! - "See Wallet Sign Unsupported" in docs'
         );
 
-      const message = new TextEncoder().encode("Hello, world!");
+      const message = new TextEncoder().encode("HashFromServer");
       const signedHash = await signMessage(message);
 
       var encodedSignedHash = bs58.encode(signedHash);
