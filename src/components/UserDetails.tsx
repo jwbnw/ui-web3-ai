@@ -122,7 +122,6 @@ export const UserDetails: FC<UserDetailProps> = ({
 
   const ShouldShowUserDetail = () => {
     if (publicKey && signedIn) {
-      console.log("here??");
       return (
         <div className="text-lg text-left">
           <div className="p-4">Username: {userName} </div>
@@ -135,10 +134,6 @@ export const UserDetails: FC<UserDetailProps> = ({
         </div>
       );
     } else if (publicKey) {
-      console.log("signed in userDetails:", signedIn);
-
-      console.log("or here??");
-
       return (
         <div>
           <div className="blur-lg">
