@@ -2,7 +2,7 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-
+import { useRouter } from "next/router";
 // Wallet
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 
@@ -13,13 +13,19 @@ import pkg from "../../../package.json";
 // Store
 import useUserSOLBalanceStore from "../../stores/useUserSOLBalanceStore";
 import HasAccountRequest from "models/HasAccountRequest";
-import { CreateAccount, CreateOrUpdateLocalUserStorage, HasAccount, SignIn } from "services/UserService";
+import {
+  CreateAccount,
+  CreateOrUpdateLocalUserStorage,
+  HasAccount,
+  SignIn,
+} from "services/UserService";
 import { Console } from "console";
 import CreateAccountRequest from "models/CreateAccountRequest";
 import { notify } from "utils/notifications";
 
 import bs58 from "bs58";
 import SignInRequest from "models/SignInRequest";
+import { Router } from "next/router";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -41,6 +47,8 @@ export const HomeView: FC<HomeViewProps> = ({ hasAccount, hasToken }) => {
   const [signedIn, setSignedIn] = useState(hasToken);
   const [hasKnownAccount, setHasKnownAccount] = useState(hasAccount);
 
+  const router = useRouter();
+
   //TODO: We're doing too many renders. fix that
   useEffect(() => {
     /* Leaving for reference later
@@ -49,9 +57,9 @@ export const HomeView: FC<HomeViewProps> = ({ hasAccount, hasToken }) => {
     } */
     setSignedIn(hasToken);
     setHasKnownAccount(hasAccount);
-
   }, [hasToken, hasAccount]);
 
+  // centralize this
   const signServerChallenge = useCallback(async () => {
     try {
       if (!publicKey) throw new Error("Wallet not connected");
@@ -160,20 +168,16 @@ export const HomeView: FC<HomeViewProps> = ({ hasAccount, hasToken }) => {
     }
   }
 
-  const handleWalletBtnClick = () => {
-    // idk what to do here yet..
-  };
-
   const handleCreateAccountBtnClick = () => {
     callCreateAccount();
   };
 
   const handleSignInBtnClick = () => {
-     callSignIn();
+    callSignIn();
   };
 
   const handlePlaygroundBtnClick = () => {
-    // link
+    router.push("/playground");
   };
 
   const MainBtnRender = () => {
@@ -183,10 +187,7 @@ export const HomeView: FC<HomeViewProps> = ({ hasAccount, hasToken }) => {
       }
       return (
         <div>
-          <WalletMultiButtonDynamic
-            onClick={handleWalletBtnClick}
-            className="btn btn-ghost btn-wide"
-          />
+          <WalletMultiButtonDynamic className="btn btn-ghost btn-wide" />
         </div>
       );
     } else if (publicKey && !hasKnownAccount) {
