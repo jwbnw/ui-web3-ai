@@ -85,7 +85,6 @@ export const UserDetails: FC<UserDetailProps> = ({
       setUserWallet(createAccountResult.wallet);
       setUserName(createAccountResult.wallet);
       CreateOrUpdateLocalUserStorage(createAccountResult);
-      localStorage.setItem("X-User-Token", createAccountResult.token); //probably move to a cookie at some point.
     } else {
       console.log("Did not recieve user id from backend something went wrong");
     }
