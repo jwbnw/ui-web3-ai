@@ -40,16 +40,15 @@ type HomeViewProps = {
 
 export const HomeView: FC<HomeViewProps> = ({ hasAccount, hasToken }) => {
   const { publicKey, signMessage } = useWallet();
-  const { connection } = useConnection();
-  const balance = useUserSOLBalanceStore((s) => s.balance);
-  const { getUserSOLBalance } = useUserSOLBalanceStore();
+  // const { connection } = useConnection();
+  // const balance = useUserSOLBalanceStore((s) => s.balance);
+  // const { getUserSOLBalance } = useUserSOLBalanceStore();
 
   const [signedIn, setSignedIn] = useState(hasToken);
   const [hasKnownAccount, setHasKnownAccount] = useState(hasAccount);
 
   const router = useRouter();
 
-  //TODO: We're doing too many renders. fix that
   useEffect(() => {
     /* Leaving for reference later
     if (wallet.publicKey) {  
@@ -182,51 +181,41 @@ export const HomeView: FC<HomeViewProps> = ({ hasAccount, hasToken }) => {
 
   const MainBtnRender = () => {
     if (!publicKey) {
-      {
-        console.log("In 1nd else");
-      }
       return (
         <div>
-          <WalletMultiButtonDynamic className="btn btn-ghost btn-wide" />
+          <WalletMultiButtonDynamic className="btn btn-wide">
+            Connect Your Wallet To Get Started
+          </WalletMultiButtonDynamic>
         </div>
       );
     } else if (publicKey && !hasKnownAccount) {
-      {
-        console.log("In 2nd else");
-      }
       return (
         <div>
           <button
             onClick={handleCreateAccountBtnClick}
-            className="btn btn-primary w-3/4"
+            className="btn btn-wide btn-accent"
           >
             CreateAccount
           </button>
         </div>
       );
     } else if (publicKey && hasAccount && !signedIn) {
-      {
-        console.log("In 3rd else");
-      }
       return (
         <div>
           <button
             onClick={handleSignInBtnClick}
-            className="btn btn-primary w-3/4"
+            className="btn btn-wide btn-accent"
           >
             Sign In
           </button>
         </div>
       );
     } else {
-      {
-        console.log("In last else");
-      }
       return (
         <div>
           <button
             onClick={handlePlaygroundBtnClick}
-            className="btn btn-primary w-3/4"
+            className="btn btn-wide btn-accent"
           >
             Go To Playground!
           </button>
