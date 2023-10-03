@@ -40,7 +40,7 @@ export const UserDetails: FC<UserDetailProps> = ({
 
   const signServerChallenge = useCallback(async () => {
     try {
-      if (!publicKey) throw new Error("Wallet not  connected");
+      if (!publicKey) throw new Error("Wallet not connected");
       if (!signMessage)
         throw new Error(
           'Wallet does not support message signing! - "See Wallet Sign Unsupported" in docs'
@@ -85,7 +85,6 @@ export const UserDetails: FC<UserDetailProps> = ({
       setUserWallet(createAccountResult.wallet);
       setUserName(createAccountResult.wallet);
       CreateOrUpdateLocalUserStorage(createAccountResult);
-      localStorage.setItem("X-User-Token", createAccountResult.token); //probably move to a cookie at some point.
     } else {
       console.log("Did not recieve user id from backend something went wrong");
     }
