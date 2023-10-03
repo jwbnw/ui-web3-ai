@@ -1,5 +1,5 @@
 // Next, React
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 
@@ -13,7 +13,13 @@ import pkg from "../../../package.json";
 // Store
 import useUserSOLBalanceStore from "../../stores/useUserSOLBalanceStore";
 import HasAccountRequest from "models/HasAccountRequest";
-import { HasAccount } from "services/UserService";
+import { CreateAccount, CreateOrUpdateLocalUserStorage, HasAccount, SignIn } from "services/UserService";
+import { Console } from "console";
+import CreateAccountRequest from "models/CreateAccountRequest";
+import { notify } from "utils/notifications";
+
+import bs58 from "bs58";
+import SignInRequest from "models/SignInRequest";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -26,87 +32,207 @@ type HomeViewProps = {
   hasToken: boolean;
 };
 
-export const HomeView: FC<HomeViewProps> = ({
-  hasAccount,
-  hasToken
-}) => {
-  
-  const wallet = useWallet();
+export const HomeView: FC<HomeViewProps> = ({ hasAccount, hasToken }) => {
+  const { publicKey, signMessage } = useWallet();
   const { connection } = useConnection();
   const balance = useUserSOLBalanceStore((s) => s.balance);
   const { getUserSOLBalance } = useUserSOLBalanceStore();
-  
+
   const [signedIn, setSignedIn] = useState(hasToken);
   const [hasKnownAccount, setHasKnownAccount] = useState(hasAccount);
 
+  //TODO: We're doing too many renders. fix that
   useEffect(() => {
     /* Leaving for reference later
     if (wallet.publicKey) {  
         getUserSOLBalance(wallet.publicKey, connection); // Leaving this for now as an example for later if needed
     } */
-
     setSignedIn(hasToken);
     setHasKnownAccount(hasAccount);
-    if( wallet.publicKey && !hasKnownAccount){
-      callHasKnownAccount();
-    }
-    else if(wallet.publicKey && hasKnownAccount && !signedIn){
-      callTokenCheck();
-    }
-  }, [wallet, connection, getUserSOLBalance, signedIn, hasKnownAccount]);
 
-  
+  }, [hasToken, hasAccount]);
 
-  function callTokenCheck(){
+  const signServerChallenge = useCallback(async () => {
+    try {
+      if (!publicKey) throw new Error("Wallet not connected");
+      if (!signMessage)
+        throw new Error(
+          'Wallet does not support message signing! - "See Wallet Sign Unsupported" in docs'
+        );
+
+      const message = new TextEncoder().encode("HashFromServer");
+      const signedHash = await signMessage(message);
+
+      var encodedSignedHash = bs58.encode(signedHash);
+
+      console.log(
+        "encoded signature at signServerChallenge(): ",
+        encodedSignedHash
+      );
+      notify({
+        type: "success",
+        message: "Sign message successful!",
+        txid: bs58.encode(signedHash),
+      });
+
+      return encodedSignedHash;
+    } catch (err: any) {
+      notify({
+        type: "error",
+        message: `Sign Message failed!`,
+        description: err?.message,
+      });
+      console.log("error", `Sign Message failed! ${err?.message}`);
+    }
+  }, [publicKey, notify, signMessage]);
+
+  function callTokenCheck() {
     let tokenInStorage = localStorage.getItem("X-User-Token");
-  
+
     if (tokenInStorage !== null) {
-      setHasKnownAccount(true);
-    } 
+      setSignedIn(true);
+    }
   }
 
   async function callHasKnownAccount() {
     console.log("calling has known account");
-    
+
     const hasAccountRequest: HasAccountRequest = {
-      publicKey: wallet.publicKey.toString(),
+      publicKey: publicKey.toString(),
     };
 
     let accountCheck = await HasAccount(hasAccountRequest);
     setHasKnownAccount(accountCheck.hasAccount);
   }
 
+  async function callCreateAccount() {
+    const signedHashValue = await signServerChallenge();
+
+    const createAccountRequest: CreateAccountRequest = {
+      signedHash: signedHashValue,
+      publicKey: publicKey.toString(),
+    };
+
+    const createAccountResult = await CreateAccount(createAccountRequest);
+
+    if (createAccountResult.userId !== "") {
+      setSignedIn(true);
+      setHasKnownAccount(true);
+      CreateOrUpdateLocalUserStorage(createAccountResult);
+      notify({
+        type: "success",
+        message: "Account Created!",
+      });
+    } else {
+      notify({
+        type: "error",
+        message: "Something went wrong, please try again later",
+      });
+      console.log("Did not recieve user id from backend something went wrong");
+    }
+  }
+
+  async function callSignIn() {
+    const signedHashValue = await signServerChallenge();
+    let wallet = publicKey.toString();
+
+    const signInRequest: SignInRequest = {
+      signedHash: signedHashValue,
+      publicKey: wallet,
+    };
+
+    const signInResult = await SignIn(signInRequest);
+
+    if (signInResult.userId !== "") {
+      setSignedIn(true);
+      setHasKnownAccount(true);
+      CreateOrUpdateLocalUserStorage(signInResult);
+      notify({
+        type: "success",
+        message: "Welcome!",
+      });
+    } else {
+      notify({
+        type: "error",
+        message: "Something went wrong!",
+      });
+      console.log("Did not recieve user id from backend something went wrong");
+    }
+  }
+
+  const handleWalletBtnClick = () => {
+    // idk what to do here yet..
+  };
+
+  const handleCreateAccountBtnClick = () => {
+    callCreateAccount();
+  };
+
+  const handleSignInBtnClick = () => {
+     callSignIn();
+  };
+
+  const handlePlaygroundBtnClick = () => {
+    // link
+  };
+
   const MainBtnRender = () => {
-    if (!wallet.publicKey) {
-      {console.log("In 1nd else");}
+    if (!publicKey) {
+      {
+        console.log("In 1nd else");
+      }
       return (
         <div>
-            <WalletMultiButtonDynamic className="btn btn-ghost btn-wide" />
+          <WalletMultiButtonDynamic
+            onClick={handleWalletBtnClick}
+            className="btn btn-ghost btn-wide"
+          />
         </div>
       );
-    } else if (wallet.publicKey && !hasKnownAccount) {
-      {console.log("In 2nd else");}
+    } else if (publicKey && !hasKnownAccount) {
+      {
+        console.log("In 2nd else");
+      }
       return (
         <div>
-              <button className="btn btn-primary w-3/4">CreateAccount</button>
+          <button
+            onClick={handleCreateAccountBtnClick}
+            className="btn btn-primary w-3/4"
+          >
+            CreateAccount
+          </button>
         </div>
       );
-    } else if(wallet.publicKey && hasAccount && !signedIn) {
-      {console.log("In 3rd else");}
+    } else if (publicKey && hasAccount && !signedIn) {
+      {
+        console.log("In 3rd else");
+      }
       return (
         <div>
-          <button className="btn btn-primary w-3/4">Sign In</button>
+          <button
+            onClick={handleSignInBtnClick}
+            className="btn btn-primary w-3/4"
+          >
+            Sign In
+          </button>
         </div>
       );
     } else {
-      {console.log("In last else");}
-      return(
-        <div>
-          <button className="btn btn-primary w-3/4">Go To Playground!</button>
-        </div>
-      )
+      {
+        console.log("In last else");
       }
+      return (
+        <div>
+          <button
+            onClick={handlePlaygroundBtnClick}
+            className="btn btn-primary w-3/4"
+          >
+            Go To Playground!
+          </button>
+        </div>
+      );
     }
+  };
 
   return (
     <div className="md:hero mx-auto p-4">
@@ -128,7 +254,7 @@ export const HomeView: FC<HomeViewProps> = ({
         <div className="relative group">
           <MainBtnRender />
         </div>
-        { /* //Dev Airdrop Feature..Commenting out for now
+        {/* //Dev Airdrop Feature..Commenting out for now
         <div className="flex flex-col mt-2">
           <RequestAirdrop />
           <h4 className="md:w-full text-2xl text-slate-300 my-2">
