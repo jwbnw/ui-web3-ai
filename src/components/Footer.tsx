@@ -41,7 +41,7 @@ export const Footer: FC = () => {
                                     </svg>
                                 </a>
                             </div>
-                            <div className=' right-0 mt-2 pr-4'>
+                            <div className="right-0 mt-2 pr-4">
                                 <div className="md:ml-2 mb-8 m-1 sm:text-left font-normal tracking-tight text-secondary">
                                         © 2023 Web3 AI
                                 </div>
