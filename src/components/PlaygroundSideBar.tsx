@@ -12,8 +12,8 @@ export const PlaygoundSideBar: React.FC<any> = (props) => {
     return (
         <div
           className={` ${
-            open ? "lg:w-40" : "lg:w-60 "
-          } flex flex-col lg:h-screen p-3 w-full bg-black shadow duration-300`}
+            open ? "lg:w-6" : "lg:w-60 "
+          }left-0 flex flex-col p-3 w-full bg-indigo opacity-50 shadow duration-300`}
         >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
