@@ -1,13 +1,73 @@
 import Link from "next/link";
-import { FC, useState } from "react";
+import { FC, useRef, useState } from "react";
 import { PaymentPresenter } from "./PaymentPresenter";
+import {
+  StablityTextToArtRequest,
+  Text_Prompt,
+} from "models/StablityTextToArtRequest";
+import { GenerateStablityTextToArt } from "../services/TextToArtService";
 
 export const AiArtComponent: React.FC = () => {
-  const [stepsValue, setStepsValue] = useState("");
+  //TODO:
+  // 1) create state to hold user values - Done
+  // 2) on generate click create object to send to backend to be proxied
+  // 3) on generate send a transaction of estimated ammounnt to new wallet
+  // 4) if success then proxy call to backend, if faliure alert and log.
 
-  function stepsOnChange(newval: any) {
-    console.log(newval);
-    setStepsValue(newval);
+  // Dev Thoughts.. Refs should be used to create DTO for backend
+  // State should be used if needed to retain values.
+  const [modelValue, setModelValue] = useState("");
+  const [presetStyle, setpresetStyle] = useState("None");
+  const [cfgScale, setCfgScale] = useState("");
+  const [costSol, setCostSol] = useState(0);
+  const [costUsd, setCostUsd] = useState(0);
+
+  const posInputRef = useRef(null);
+  const negInputRef = useRef(null);
+  const presetStyleRef = useRef(null);
+  const cfgRef = useRef(null);
+  const stepsRef = useRef(null);
+
+  function handleAiModelChage(newval: string) {
+    setModelValue(newval); // make this value an enum
+  }
+
+  function handleStyleOption(newval: string) {
+    setpresetStyle(newval);
+  }
+
+  function handleStepsSelection() {}
+
+  function handleCfgInput() {}
+
+  function handleGeneratePress() {
+    callGenerateStablityTextToArt();
+  }
+
+  async function callGenerateStablityTextToArt() {
+    const posPrompt: Text_Prompt = {
+      text: posInputRef.current.value,
+      weight: 1,
+    };
+
+    const negPrompt: Text_Prompt = {
+      text: negInputRef.current.value,
+      weight: -1,
+    };
+
+    const StablityTextToArtRequest: StablityTextToArtRequest = {
+      steps: +stepsRef.current.value,
+      width: 1024,
+      height: 1024,
+      seed: 0,
+      cfg_scale: +cfgRef.current.value,
+      style_preset: presetStyleRef.current.value, // note if this is none I need to removeit from ther request
+      text_prompts: [posPrompt, negPrompt],
+      samples: 1,
+    };
+
+    var result = await GenerateStablityTextToArt(StablityTextToArtRequest);
+    console.log("result:", result);
   }
 
   return (
@@ -27,7 +87,12 @@ export const AiArtComponent: React.FC = () => {
               <br />
               <button
                 type="button"
-                className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                className="btn text-white btn-neutral  text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                value="dalle"
+                onClick={(e) => {
+                  handleAiModelChage(e.currentTarget.value);
+                }}
+                disabled
               >
                 DALL-E
               </button>
@@ -36,6 +101,10 @@ export const AiArtComponent: React.FC = () => {
               <button
                 type="button"
                 className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                value="stablity"
+                onClick={(e) => {
+                  handleAiModelChage(e.currentTarget.value);
+                }}
               >
                 Stablity AI
               </button>
@@ -43,7 +112,12 @@ export const AiArtComponent: React.FC = () => {
               <br />
               <button
                 type="button"
-                className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                className="btn text-white btn-neutral font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                value="midjourney"
+                onClick={(e) => {
+                  handleAiModelChage(e.currentTarget.value);
+                }}
+                disabled
               >
                 Mid-Journey
               </button>
@@ -57,6 +131,7 @@ export const AiArtComponent: React.FC = () => {
               <textarea
                 className="textarea textarea-accent"
                 placeholder="Harry Potter, Obama, Sonic, 10, Inu"
+                ref={posInputRef}
               ></textarea>
               <br />
               <br />
@@ -66,6 +141,7 @@ export const AiArtComponent: React.FC = () => {
               <textarea
                 className="textarea textarea-error"
                 placeholder="blurry, bad"
+                ref={negInputRef}
               ></textarea>
             </div>
             <div className="pl-20 flex flex-col">
@@ -74,7 +150,14 @@ export const AiArtComponent: React.FC = () => {
               <label className="block mb-2 text-sm font-medium text-white dark:text-white">
                 Style
               </label>
-              <select className="select select-bordered w-full max-w-xs">
+              <select
+                value={presetStyle}
+                onChange={(e) => {
+                  handleStyleOption(e.currentTarget.value);
+                }}
+                className="select select-bordered w-full max-w-xs"
+                ref={presetStyleRef}
+              >
                 <option disabled selected>
                   None
                 </option>
@@ -89,15 +172,13 @@ export const AiArtComponent: React.FC = () => {
                 Steps
               </label>
               <input
+                ref={stepsRef}
                 type="range"
                 min="30"
                 max="150"
-                defaultValue="0"
+                defaultValue="30"
                 className="range"
                 step="30"
-                onChange={(e) => {
-                  stepsOnChange(e.currentTarget.value);
-                }}
               />
               <div className="w-full flex justify-between text-xs px-2">
                 <span>30</span>
@@ -111,6 +192,7 @@ export const AiArtComponent: React.FC = () => {
                 CFG Scale
               </label>
               <input
+                ref={cfgRef}
                 type="text"
                 placeholder="0-35"
                 className="input input-bordered w-full max-w-xs"
@@ -118,12 +200,17 @@ export const AiArtComponent: React.FC = () => {
             </div>
           </div>
           <div className="flex flex-row pt-10">
-              <div className="basis-1/2">
-                <PaymentPresenter />
-              </div>
-              <div className="basis-1/2 justify-center text-center py-8">
-                <button className="btn btn-success btn-wide text-lg">Generate!</button>
-              </div>
+            <div className="basis-1/2">
+              <PaymentPresenter />
+            </div>
+            <div className="basis-1/2 justify-center text-center py-8">
+              <button
+                className="btn btn-success btn-wide text-lg"
+                onClick={handleGeneratePress}
+              >
+                Generate!
+              </button>
+            </div>
           </div>
         </main>
       </div>
