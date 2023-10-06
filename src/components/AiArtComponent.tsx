@@ -1,16 +1,18 @@
 import Link from "next/link";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { FC, useRef, useState } from "react";
 import { PaymentPresenter } from "./PaymentPresenter";
+import { TextToArtRequest, Text_Prompt } from "models/TextToArtRequest";
 import {
-  StablityTextToArtRequest,
-  Text_Prompt,
-} from "models/StablityTextToArtRequest";
-import { GenerateStablityTextToArt } from "../services/TextToArtService";
+  GenerateStablityTextToArt,
+  GenerateTextToArtTransaction,
+} from "../services/TextToArtService";
+import GenerateTextToArtTransactionRequest from "models/GenerateTextToArtTransactionRequest";
 
 export const AiArtComponent: React.FC = () => {
   //TODO:
   // 1) create state to hold user values - Done
-  // 2) on generate click create object to send to backend to be proxied
+  // 2) on generate click create object to send to backend to be proxied - Done
   // 3) on generate send a transaction of estimated ammounnt to new wallet
   // 4) if success then proxy call to backend, if faliure alert and log.
 
@@ -18,7 +20,6 @@ export const AiArtComponent: React.FC = () => {
   // State should be used if needed to retain values.
   const [modelValue, setModelValue] = useState("");
   const [presetStyle, setpresetStyle] = useState("None");
-  const [cfgScale, setCfgScale] = useState("");
   const [costSol, setCostSol] = useState(0);
   const [costUsd, setCostUsd] = useState(0);
 
@@ -28,6 +29,8 @@ export const AiArtComponent: React.FC = () => {
   const cfgRef = useRef(null);
   const stepsRef = useRef(null);
 
+  const { publicKey, signMessage } = useWallet();
+
   function handleAiModelChage(newval: string) {
     setModelValue(newval); // make this value an enum
   }
@@ -36,15 +39,14 @@ export const AiArtComponent: React.FC = () => {
     setpresetStyle(newval);
   }
 
-  function handleStepsSelection() {}
-
-  function handleCfgInput() {}
-
   function handleGeneratePress() {
-    callGenerateStablityTextToArt();
+    callGetTextToArtPaymentTransaction();
   }
 
-  async function callGenerateStablityTextToArt() {
+  async function callGetTextToArtPaymentTransaction() {
+    //TODO: should be user firendly.. (disable generate btn if no connected wallet.)
+    if (!publicKey) throw new Error("Wallet not connected");
+
     const posPrompt: Text_Prompt = {
       text: posInputRef.current.value,
       weight: 1,
@@ -55,7 +57,14 @@ export const AiArtComponent: React.FC = () => {
       weight: -1,
     };
 
-    const StablityTextToArtRequest: StablityTextToArtRequest = {
+    const transactionRequest: GenerateTextToArtTransactionRequest = {
+      estimatedCostUsd: null,
+      estimatedCostSol: costSol,
+      paymentChoice: "SOL",
+      payerKey: publicKey.toString(),
+    };
+
+    const textToArtRequest: TextToArtRequest = {
       steps: +stepsRef.current.value,
       width: 1024,
       height: 1024,
@@ -64,10 +73,10 @@ export const AiArtComponent: React.FC = () => {
       style_preset: presetStyleRef.current.value, // note if this is none I need to removeit from ther request
       text_prompts: [posPrompt, negPrompt],
       samples: 1,
+      transaction_request: transactionRequest,
     };
 
-    var result = await GenerateStablityTextToArt(StablityTextToArtRequest);
-    console.log("result:", result);
+    var transaction = await GenerateTextToArtTransaction(textToArtRequest);
   }
 
   return (
