@@ -1,15 +1,15 @@
-import GenerateTextToArtTransactionRequest from 'models/GenerateTextToArtTransactionRequest'
+import TransactionDetail from 'models/TransactionDetail'
 
-export interface TextToArtRequest {
+export interface TextToArtTranscationRequest {
   steps: number;
   width: number; //remove - add in backend proxy
   height: number; //remove - add in backend proxy
   seed: number; //remove - add in backend proxy
-  cfg_scale: number;
-  style_preset: string;
+  cfgScale: number;
+  stylePreset: string;
   samples: number; //remove - add in backend proxy
-  text_prompts: Text_Prompt[];
-  transaction_request: GenerateTextToArtTransactionRequest;
+  textPrompts: Text_Prompt[];
+  transactionRequest: TransactionDetail;
 }
 
 export interface Text_Prompt {
