@@ -1,13 +1,22 @@
 import Link from "next/link";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import {
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  TransactionMessage,
+  TransactionSignature,
+  VersionedTransaction,
+} from "@solana/web3.js";
 import { FC, useRef, useState } from "react";
 import { PaymentPresenter } from "./PaymentPresenter";
-import { TextToArtRequest, Text_Prompt } from "models/TextToArtRequest";
 import {
-  GenerateStablityTextToArt,
-  GenerateTextToArtTransaction,
-} from "../services/TextToArtService";
-import GenerateTextToArtTransactionRequest from "models/GenerateTextToArtTransactionRequest";
+  TextToArtTranscationRequest,
+  Text_Prompt,
+} from "models/TextToArtTranscationRequest";
+import { GenerateTextToArtTransaction } from "../services/TextToArtService";
+import TransactionDetail from "models/TransactionDetail";
+import { notify } from "../utils/notifications";
 
 export const AiArtComponent: React.FC = () => {
   //TODO:
@@ -29,7 +38,8 @@ export const AiArtComponent: React.FC = () => {
   const cfgRef = useRef(null);
   const stepsRef = useRef(null);
 
-  const { publicKey, signMessage } = useWallet();
+  const { publicKey, sendTransaction } = useWallet();
+  const { connection } = useConnection();
 
   function handleAiModelChage(newval: string) {
     setModelValue(newval); // make this value an enum
@@ -47,6 +57,8 @@ export const AiArtComponent: React.FC = () => {
     //TODO: should be user firendly.. (disable generate btn if no connected wallet.)
     if (!publicKey) throw new Error("Wallet not connected");
 
+    var signature = await sendGenerationTransaction();
+
     const posPrompt: Text_Prompt = {
       text: posInputRef.current.value,
       weight: 1,
@@ -57,26 +69,96 @@ export const AiArtComponent: React.FC = () => {
       weight: -1,
     };
 
-    const transactionRequest: GenerateTextToArtTransactionRequest = {
-      estimatedCostUsd: null,
-      estimatedCostSol: costSol,
-      paymentChoice: "SOL",
+    const transactionRequest: TransactionDetail = {
+      signature: signature,
       payerKey: publicKey.toString(),
     };
 
-    const textToArtRequest: TextToArtRequest = {
+    const textToArtRequest: TextToArtTranscationRequest = {
       steps: +stepsRef.current.value,
       width: 1024,
       height: 1024,
       seed: 0,
-      cfg_scale: +cfgRef.current.value,
-      style_preset: presetStyleRef.current.value, // note if this is none I need to removeit from ther request
-      text_prompts: [posPrompt, negPrompt],
+      cfgScale: +cfgRef.current.value,
+      stylePreset: presetStyleRef.current.value, // note if this is none I need to removeit from ther request (or it can be null I guess then the BE can opt not to send  to ai art generator if null)
+      textPrompts: [posPrompt, negPrompt],
       samples: 1,
-      transaction_request: transactionRequest,
+      transactionRequest: transactionRequest,
     };
+    if (signature !== null) {
+      var transaction = await GenerateTextToArtTransaction(textToArtRequest);
+      console.log("Made the call successfully!:", transaction);
+    }
+  }
 
-    var transaction = await GenerateTextToArtTransaction(textToArtRequest);
+  async function sendGenerationTransaction() {
+    let signature: TransactionSignature = "";
+    try {
+      const instructions = [
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: new PublicKey(
+            "9GXxoq5MFKe3Zwh36EKJrRNMCauf3j83iUWHp6qKc4HG"
+          ),
+          lamports: 5_000_000,
+        }),
+      ];
+
+      let latestBlockhash = await connection.getLatestBlockhash();
+
+      const messageLegacy = new TransactionMessage({
+        payerKey: publicKey,
+        recentBlockhash: latestBlockhash.blockhash,
+        instructions,
+      }).compileToLegacyMessage();
+
+      // Note: Using Legacy for POC fix this before live
+      // const transation = new VersionedTransaction(messageV0)
+
+      const transation = new VersionedTransaction(messageLegacy);
+
+      // Send transaction and await for signature
+      signature = await sendTransaction(transation, connection);
+
+      //wait 17 sceconds. Otherwise backend RPC call can happens too fast.
+      //obviously there is a better way to do this and sleeping
+      //in the client is a hack.. I just don't have time rn to fix
+      // realistically I'll implement some custom re-try/fault tolerance
+      // in the backend httpclient
+      await blockDelay(17000);
+
+      // Await for confirmation
+      const confRes = await connection.confirmTransaction(
+        { signature, ...latestBlockhash },
+        "confirmed"
+      );
+
+      console.log("confRes: ", confRes);
+
+      notify({
+        type: "success",
+        message: "Transaction successful!",
+        txid: signature,
+      });
+
+      if (signature === null) {
+        throw new Error("Signature was null after text to art transaction");
+      }
+      return signature;
+    } catch (error: any) {
+      notify({
+        type: "error",
+        message: `Transaction failed!`,
+        description: error?.message,
+        txid: signature,
+      });
+      console.log("error", `Transaction failed! ${error?.message}`, signature);
+      return;
+    }
+  }
+
+  function blockDelay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   return (
