@@ -33,7 +33,8 @@ const Home: NextPage = (props) => {
     };
 
     let accountCheck = await HasAccount(hasAccountRequest);
-    setHasKnownAccount(accountCheck.hasAccount);
+
+    setHasKnownAccount(accountCheck.hasAccount); // TypeError: Cannot read properties of undefined (reading 'hasAccount') when navigating away and back to (when  backend is not running)
   }
 
   function handleTokenExists() {
