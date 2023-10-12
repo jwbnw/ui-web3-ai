@@ -14,9 +14,11 @@ import {
   TextToArtTranscationRequest,
   Text_Prompt,
 } from "models/TextToArtTranscationRequest";
-import { GenerateTextToArtTransaction } from "../services/TextToArtService";
+import { TextToArtTranscationResponse } from "models/TextToArtTranscationResponse";
+import { GenerateTextToArtResult } from "../services/TextToArtService";
 import TransactionDetail from "models/TransactionDetail";
 import { notify } from "../utils/notifications";
+import { TextToArtImageViewer } from "./TextToArtImageViewer";
 
 export const AiArtComponent: React.FC = () => {
   //TODO:
@@ -31,6 +33,8 @@ export const AiArtComponent: React.FC = () => {
   const [presetStyle, setpresetStyle] = useState("None");
   const [costSol, setCostSol] = useState(0);
   const [costUsd, setCostUsd] = useState(0);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageModalDataRaw, setImageModalDataRaw] = useState("");
 
   const posInputRef = useRef(null);
   const negInputRef = useRef(null);
@@ -51,6 +55,10 @@ export const AiArtComponent: React.FC = () => {
 
   function handleGeneratePress() {
     callGetTextToArtPaymentTransaction();
+  }
+
+  function hideImageViewer() {
+    setShowImageModal(false);
   }
 
   async function callGetTextToArtPaymentTransaction() {
@@ -86,8 +94,10 @@ export const AiArtComponent: React.FC = () => {
       transactionRequest: transactionRequest,
     };
     if (signature !== null) {
-      var transaction = await GenerateTextToArtTransaction(textToArtRequest);
-      console.log("Made the call successfully!:", transaction);
+      var result = await GenerateTextToArtResult(textToArtRequest);
+      console.log("Made the call successfully!:", result);
+
+      RenderGeneratedArt(result);
     }
   }
 
@@ -161,12 +171,31 @@ export const AiArtComponent: React.FC = () => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  function RenderGeneratedArt(textToArtImages: TextToArtTranscationResponse) {
+    if (textToArtImages.textToArtResponse[0].Base64 !== null) {
+      setImageModalDataRaw(textToArtImages.textToArtResponse[0].Base64);
+      setShowImageModal(true);
+    }
+  }
+
   return (
     <div className="md:hero-content flex flex-col">
       <h1 className="text-center text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-fuchsia-500 mt-10 mb-8">
         AI Art Generation!
       </h1>
       <div className="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
+        {
+          showImageModal ? (
+            <TextToArtImageViewer
+              hideModalFunc={hideImageViewer}
+              imageDataRaw={imageModalDataRaw}
+            />
+          ) : (
+            <div></div>
+          )
+          //  Then maybe one more "show my art btn here which flips
+          //  showImageModal"
+        }
         <main
           role="main"
           className="w-full h-full flex-grow p-3 overflow-auto "
