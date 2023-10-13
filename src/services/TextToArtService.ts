@@ -5,7 +5,7 @@ import { TextToArtTranscationResponse } from "models/TextToArtTranscationRespons
 
 
 //TODO: This should probably be a class
-// TODO: Routes should constants and pre-defined. Domains should be in .env file.
+//TODO: Routes should constants and pre-defined. Domains should be in .env file.
 
 const customConfig = {
   headers: {
