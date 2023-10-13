@@ -54,7 +54,7 @@ export const AiArtComponent: React.FC = () => {
   }
 
   async function callGetTextToArtPaymentTransaction() {
-    //TODO: should be user firendly.. (disable generate btn if no connected wallet.)
+    //TODO: should be user friendly.. (disable generate btn if no connected wallet.)
     if (!publicKey) throw new Error("Wallet not connected");
 
     var signature = await sendGenerationTransaction();
@@ -80,7 +80,7 @@ export const AiArtComponent: React.FC = () => {
       height: 1024,
       seed: 0,
       cfgScale: +cfgRef.current.value,
-      stylePreset: presetStyleRef.current.value, // note if this is none I need to removeit from ther request (or it can be null I guess then the BE can opt not to send  to ai art generator if null)
+      stylePreset: presetStyleRef.current.value, // TODO: Handle null on backend
       textPrompts: [posPrompt, negPrompt],
       samples: 1,
       transactionRequest: transactionRequest,
@@ -114,18 +114,16 @@ export const AiArtComponent: React.FC = () => {
         instructions,
       }).compileToLegacyMessage();
 
-      // Note: Using Legacy for POC fix this before live
-      // const transation = new VersionedTransaction(messageV0)
+      // TODO: Using Legacy for POC. Consider moving to Versioned
 
       const transation = new VersionedTransaction(messageLegacy);
 
-      // Send transaction and await for signature
       signature = await sendTransaction(transation, connection);
 
-      //wait 17 sceconds. Otherwise backend RPC call can happens too fast.
-      //obviously there is a better way to do this and sleeping
-      //in the client is a hack.. I just don't have time rn to fix
-      // realistically I'll implement some custom re-try/fault tolerance
+      // wait 17 sceconds. Otherwise backend RPC call can happens too fast...
+      // obviously there is a better way to do this and sleeping
+      // the client is a hack.. I just don't have time to fix
+      // realistically I'll implement custom re-try/fault tolerance
       // in the backend httpclient
       await blockDelay(17000);
 
