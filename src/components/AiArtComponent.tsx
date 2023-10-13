@@ -80,7 +80,7 @@ export const AiArtComponent: React.FC = () => {
       height: 1024,
       seed: 0,
       cfgScale: +cfgRef.current.value,
-      stylePreset: presetStyleRef.current.value, // TODO: Handle null on backend
+      stylePreset: presetStyleRef.current.value,
       textPrompts: [posPrompt, negPrompt],
       samples: 1,
       transactionRequest: transactionRequest,
@@ -100,7 +100,7 @@ export const AiArtComponent: React.FC = () => {
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: new PublicKey(
-            "9GXxoq5MFKe3Zwh36EKJrRNMCauf3j83iUWHp6qKc4HG"
+            "9GXxoq5MFKe3Zwh36EKJrRNMCauf3j83iUWHp6qKc4HG" // should be env var
           ),
           lamports: 4_530_000,
         }),
