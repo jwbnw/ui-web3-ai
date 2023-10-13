@@ -2,11 +2,11 @@ import TransactionDetail from 'models/TransactionDetail'
 
 export interface TextToArtTranscationResponse {
 
-  textToArtResponse: TextToArtResponse[];
+  stablityTextToArtImages: TextToArtResponse[];
 }
 
 export interface TextToArtResponse {
-  Base64: string;
-  FinishReason: string;
-  Seed: number;
+  base64: string;
+  finishReason: string;
+  seed: number;
 }

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   Keypair,
@@ -21,14 +20,7 @@ import { notify } from "../utils/notifications";
 import { TextToArtImageViewer } from "./TextToArtImageViewer";
 
 export const AiArtComponent: React.FC = () => {
-  //TODO:
-  // 1) create state to hold user values - Done
-  // 2) on generate click create object to send to backend to be proxied - Done
-  // 3) on generate send a transaction of estimated ammounnt to new wallet
-  // 4) if success then proxy call to backend, if faliure alert and log.
 
-  // Dev Thoughts.. Refs should be used to create DTO for backend
-  // State should be used if needed to retain values.
   const [modelValue, setModelValue] = useState("");
   const [presetStyle, setpresetStyle] = useState("None");
   const [costSol, setCostSol] = useState(0);
@@ -172,8 +164,8 @@ export const AiArtComponent: React.FC = () => {
   }
 
   function RenderGeneratedArt(textToArtImages: TextToArtTranscationResponse) {
-    if (textToArtImages.textToArtResponse[0].Base64 !== null) {
-      setImageModalDataRaw(textToArtImages.textToArtResponse[0].Base64);
+    if (textToArtImages.stablityTextToArtImages[0].base64 !== null) {
+      setImageModalDataRaw(textToArtImages.stablityTextToArtImages[0].base64);
       setShowImageModal(true);
     }
   }

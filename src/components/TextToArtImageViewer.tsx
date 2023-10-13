@@ -15,8 +15,9 @@ export const TextToArtImageViewer: React.FC<TextToArtImageViewerProps> = ({
   return (
     <div className="fixed top-0 left-0 z-80 w-screen h-screen bg-black/70 flex justify-center items-center">
       <img
-        //src={`data:image/png;base64,${imageDataRaw}`}
-        src="https://thegreatroom.co/wp-content/uploads/2019/12/1024.png" //placeholder
+        //TODO: Line this up then make stablity account, plug in key in backend, and pray. Then if all works clean the fuck up
+        src={`data:image/png;base64,${imageDataRaw}`}
+        //src="https://thegreatroom.co/wp-content/uploads/2019/12/1024.png" //placeholder
         className="h-96"
       ></img>
       <div className="absolute bottom-0 h-60"> {/*h-60 is a hack - nest img in dev and pad top relative*/}

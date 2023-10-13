@@ -25,7 +25,7 @@ export async function GenerateTextToArtResult(
       );
       
     const result = response.data;
-    console.log("Loggin Response.Data TextToArt.GenerateTextToArtTransaction:", result);
+    console.log("TextToArt.GenerateTextToArtTransaction:", result.stablityTextToArtImages);
     return result;
   } catch (err) {
     console.log("Error in TextToArt.GenerateTextToArtTransaction:", err);
