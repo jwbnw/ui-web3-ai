@@ -102,7 +102,7 @@ export const AiArtComponent: React.FC = () => {
           toPubkey: new PublicKey(
             "9GXxoq5MFKe3Zwh36EKJrRNMCauf3j83iUWHp6qKc4HG"
           ),
-          lamports: 5_000_000,
+          lamports: 4_530_000,
         }),
       ];
 
