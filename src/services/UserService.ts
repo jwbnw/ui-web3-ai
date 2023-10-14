@@ -21,7 +21,7 @@ export async function CreateAccount(
 ): Promise<CreateAccountResponse> {
   try {
     const response = await axios.post<CreateAccountResponse>(
-      "https://localhost:7247/api/Auth/CreateAccount",
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/Auth/CreateAccount`,
       JSON.stringify(request),
       customConfig
     );
@@ -35,7 +35,7 @@ export async function CreateAccount(
 export async function SignIn(request: SignInRequest): Promise<SignInResponse> {
   try {
     const response = await axios.post<SignInResponse>(
-      "https://localhost:7247/api/Auth/SignIn",
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/Auth/SignIn`,
       JSON.stringify(request),
       customConfig
     );
@@ -51,7 +51,7 @@ export async function HasAccount(
 ): Promise<HasAccountResponse> {
   try {
     const response = await axios.post<HasAccountResponse>(
-      "https://localhost:7247/api/Auth/HasAccount",
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/Auth/HasAccount`,
       JSON.stringify(request),
       customConfig
     );
