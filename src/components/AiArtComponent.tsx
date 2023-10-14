@@ -75,7 +75,7 @@ export const AiArtComponent: React.FC = () => {
     const transactionRequest: TransactionDetail = {
       signature: signature,
       payerKey: publicKey.toString(),
-      env: "Live" 
+      env: "Dev" 
     };
 
     const textToArtRequest: TextToArtTranscationRequest = {
@@ -166,6 +166,10 @@ export const AiArtComponent: React.FC = () => {
   }
 
   function RenderGeneratedArt(textToArtImages: TextToArtTranscationResponse) {
+        
+    //This does not account for the case of stablityTextToArtImages being
+    //undefined. TODO: Better error handling around non 2xx
+
     if (textToArtImages.stablityTextToArtImages[0].base64 !== null) {
       setImageModalDataRaw(textToArtImages.stablityTextToArtImages[0].base64);
       setShowImageModal(true);
