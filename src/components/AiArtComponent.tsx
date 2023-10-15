@@ -75,7 +75,7 @@ export const AiArtComponent: React.FC = () => {
     const transactionRequest: TransactionDetail = {
       signature: signature,
       payerKey: publicKey.toString(),
-      env: "Dev" 
+      env: "Live" 
     };
 
     const textToArtRequest: TextToArtTranscationRequest = {
@@ -104,7 +104,7 @@ export const AiArtComponent: React.FC = () => {
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: new PublicKey(
-            "9GXxoq5MFKe3Zwh36EKJrRNMCauf3j83iUWHp6qKc4HG" // should be env var
+            process.env.NEXT_PUBLIC_DESTINATION_WALLET 
           ),
           lamports: 4_530_000,
         }),
