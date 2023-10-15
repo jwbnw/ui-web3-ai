@@ -1,4 +1,4 @@
-import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useWallet, useConnection} from "@solana/wallet-adapter-react";
 import {
   Keypair,
   PublicKey,
@@ -34,8 +34,8 @@ export const AiArtComponent: React.FC = () => {
   const cfgRef = useRef(null);
   const stepsRef = useRef(null);
 
-  const { publicKey, sendTransaction } = useWallet();
-  const { connection } = useConnection();
+  const { publicKey, sendTransaction  } = useWallet();
+  const { connection  } = useConnection();
 
   function handleAiModelChage(newval: string) {
     setModelValue(newval); // make this value an enum
@@ -69,9 +69,13 @@ export const AiArtComponent: React.FC = () => {
       weight: -1,
     };
 
+    // Note wallet-adapter does not track network this so I'm going have to build out 
+    // some state management system for this. Granted, Devs can come in and manually 
+    // swap this to "Dev", "Test", Or "Live" - by default it should be "Live"
     const transactionRequest: TransactionDetail = {
       signature: signature,
       payerKey: publicKey.toString(),
+      env: "Live" 
     };
 
     const textToArtRequest: TextToArtTranscationRequest = {
@@ -100,7 +104,7 @@ export const AiArtComponent: React.FC = () => {
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: new PublicKey(
-            "9GXxoq5MFKe3Zwh36EKJrRNMCauf3j83iUWHp6qKc4HG" // should be env var
+            process.env.NEXT_PUBLIC_DESTINATION_WALLET 
           ),
           lamports: 4_530_000,
         }),
@@ -162,6 +166,10 @@ export const AiArtComponent: React.FC = () => {
   }
 
   function RenderGeneratedArt(textToArtImages: TextToArtTranscationResponse) {
+        
+    //This does not account for the case of stablityTextToArtImages being
+    //undefined. TODO: Better error handling around non 2xx
+
     if (textToArtImages.stablityTextToArtImages[0].base64 !== null) {
       setImageModalDataRaw(textToArtImages.stablityTextToArtImages[0].base64);
       setShowImageModal(true);

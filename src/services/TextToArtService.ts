@@ -19,7 +19,7 @@ export async function GenerateTextToArtResult(
   try {
     
       const response = await axios.post<TextToArtTranscationResponse>(
-        "https://localhost:7247/api/text-to-art/create-transaction",
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/text-to-art/create-transaction`,
         JSON.stringify(request),
         customConfig
       );
