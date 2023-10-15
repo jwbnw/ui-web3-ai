@@ -34,8 +34,8 @@ export const AiArtComponent: React.FC = () => {
   const cfgRef = useRef(null);
   const stepsRef = useRef(null);
 
-  const { publicKey, sendTransaction,  } = useWallet();
-  const { connection,  } = useConnection();
+  const { publicKey, sendTransaction  } = useWallet();
+  const { connection  } = useConnection();
 
   function handleAiModelChage(newval: string) {
     setModelValue(newval); // make this value an enum
