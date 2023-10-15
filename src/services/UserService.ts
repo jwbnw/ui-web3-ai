@@ -9,7 +9,7 @@ import IUser from "models/IUser";
 
 //TODO: This should probably be a class
 // TODO: Routes should constants and pre-defined. Domains should be in .env file.
-
+// TODO: Come up with a scheme for swapping out prod and local urls
 const customConfig = {
   headers: {
     "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export async function CreateAccount(
 ): Promise<CreateAccountResponse> {
   try {
     const response = await axios.post<CreateAccountResponse>(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/Auth/CreateAccount`,
+      "https://web3aisvc.azurewebsites.net/api/Auth/CreateAccount",
       JSON.stringify(request),
       customConfig
     );
@@ -35,7 +35,7 @@ export async function CreateAccount(
 export async function SignIn(request: SignInRequest): Promise<SignInResponse> {
   try {
     const response = await axios.post<SignInResponse>(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/Auth/SignIn`,
+      "https://web3aisvc.azurewebsites.net/api/Auth/SignIn",
       JSON.stringify(request),
       customConfig
     );
@@ -51,7 +51,7 @@ export async function HasAccount(
 ): Promise<HasAccountResponse> {
   try {
     const response = await axios.post<HasAccountResponse>(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/Auth/HasAccount`,
+      "https://web3aisvc.azurewebsites.net/api/Auth/HasAccount",
       JSON.stringify(request),
       customConfig
     );

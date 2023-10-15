@@ -104,7 +104,7 @@ export const AiArtComponent: React.FC = () => {
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: new PublicKey(
-            process.env.NEXT_PUBLIC_DESTINATION_WALLET 
+            "9GXxoq5MFKe3Zwh36EKJrRNMCauf3j83iUWHp6qKc4HG" 
           ),
           lamports: 4_530_000,
         }),
