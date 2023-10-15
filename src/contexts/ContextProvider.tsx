@@ -21,7 +21,8 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { networkConfiguration } = useNetworkConfiguration();
     const network = networkConfiguration as WalletAdapterNetwork;
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-    const tempLiveEndpoint = "https://try-rpc.mainnet.solana.blockdaemon.tech"
+    // I am aware the api key is hardcoded. This is just for the beta.
+    const tempLiveEndpoint = "https://rpc.helius.xyz/?api-key=8949714d-2da1-48db-9101-a9511113e7fe"
 
     console.log("Network:", network);
     console.log("Endpoint", endpoint);
