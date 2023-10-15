@@ -21,8 +21,12 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { networkConfiguration } = useNetworkConfiguration();
     const network = networkConfiguration as WalletAdapterNetwork;
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+    const tempLiveEndpoint = "https://try-rpc.mainnet.solana.blockdaemon.tech"
 
-    console.log(network);
+    console.log("Network:", network);
+    console.log("Endpoint", endpoint);
+
+    
 
     const wallets = useMemo(
         () => [
@@ -41,7 +45,7 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     return (
         // TODO: updates needed for updating and referencing endpoint: wallet adapter rework
-        <ConnectionProvider endpoint={endpoint}>
+        <ConnectionProvider endpoint={tempLiveEndpoint}>
             <WalletProvider wallets={wallets} onError={onError} autoConnect={autoConnect}>
                 <ReactUIWalletModalProviderDynamic>
                     {children}
