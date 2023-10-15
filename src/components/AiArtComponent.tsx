@@ -92,6 +92,14 @@ export const AiArtComponent: React.FC = () => {
       samples: 1,
       transactionRequest: transactionRequest,
     };
+
+      // wait 20 sceconds. Otherwise backend RPC call may happen too fast...
+      // obviously there is a better way to do this and sleeping
+      // the client is a hack.. I just don't have time to fix
+      // realistically I'll implement custom re-try/fault tolerance
+      // in the backend httpclient
+      await blockDelay(20000);
+
     if (signature !== null) {
       var result = await GenerateTextToArtResult(textToArtRequest);
       // console.log("Made the call successfully!:", result);
@@ -127,13 +135,6 @@ export const AiArtComponent: React.FC = () => {
       const transation = new VersionedTransaction(messageLegacy);
 
       signature = await sendTransaction(transation, connection);
-
-      // wait 17 sceconds. Otherwise backend RPC call can happens too fast...
-      // obviously there is a better way to do this and sleeping
-      // the client is a hack.. I just don't have time to fix
-      // realistically I'll implement custom re-try/fault tolerance
-      // in the backend httpclient
-      await blockDelay(17000);
 
       // Await for confirmation
       const confRes = await connection.confirmTransaction(
