@@ -128,6 +128,12 @@ export const AiArtComponent: React.FC = () => {
 
       signature = await sendTransaction(transation, connection);
 
+      // wait 17 sceconds. Otherwise backend RPC call can happens too fast...
+      // obviously there is a better way to do this and sleeping
+      // the client is a hack.. I just don't have time to fix
+      // realistically I'll implement custom re-try/fault tolerance
+      // in the backend httpclient
+      await blockDelay(17000);
 
       // Await for confirmation
       const confRes = await connection.confirmTransaction(
@@ -143,12 +149,6 @@ export const AiArtComponent: React.FC = () => {
         txid: signature,
       });
 
-      // wait 17 sceconds. Otherwise backend RPC call can happens too fast...
-      // obviously there is a better way to do this and sleeping
-      // the client is a hack.. I just don't have time to fix
-      // realistically I'll implement custom re-try/fault tolerance
-      // in the backend httpclient
-      await blockDelay(17000);
 
       if (signature === null) {
         setIsGeneratingArt(false);
