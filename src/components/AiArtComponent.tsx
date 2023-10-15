@@ -248,7 +248,7 @@ export const AiArtComponent: React.FC = () => {
               </label>
               <textarea
                 className="textarea textarea-accent"
-                placeholder="Harry Potter, Obama, Sonic, 10, Inu"
+                placeholder="cat and dog, happy, funny"
                 ref={posInputRef}
               ></textarea>
               <br />
