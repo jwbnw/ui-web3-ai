@@ -11,9 +11,9 @@ export const AiTextComponent: React.FC = () => {
                 <div className="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
                   <main
                     role="main"
-                    className="w-full h-full flex-grow p-3 overflow-auto"
+                    className="w-full h-full flex-grow p-3 overflow-auto text-center"
                   >
-                    {/*main here*/} Content
+                    {/*main here*/} Coming Soon!
                   </main>
                 </div>
               </div>
