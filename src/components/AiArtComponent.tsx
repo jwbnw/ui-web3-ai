@@ -75,7 +75,7 @@ export const AiArtComponent: React.FC = () => {
     const transactionRequest: TransactionDetail = {
       signature: signature,
       payerKey: publicKey.toString(),
-      env: "Dev" 
+      env: "Live" 
     };
 
     const textToArtRequest: TextToArtTranscationRequest = {
