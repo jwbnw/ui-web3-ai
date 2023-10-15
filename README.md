@@ -1,6 +1,6 @@
-## WIP Solana Hyperdrive Hackathon Project
+## WIP Solana Hyperdrive Hackathon Project 
 
-Readme is WIP and may be incomplete at times. Reach out to repo owner with questions.
+Readme is WIP and may be incomplete at times. Reach out to repo owner with questions - may be slow to respond.
 
 
 ## Local Dev Getting Started
