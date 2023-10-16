@@ -135,7 +135,7 @@ export const UserDetails: FC<UserDetailProps> = ({
           <div className="p-4">Email: (Coming Soon)</div>
           <div className="p-4">Phone: (Coming Soon)</div>
           <div className="flex justify-center pt-4">
-            <button className="btn btn-primary w-3/4">Edit</button>
+            <button disabled={true} className="btn btn-primary w-3/4">Edit</button>
           </div>
         </div>
       );
