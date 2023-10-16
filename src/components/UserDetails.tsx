@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { FC, useCallback, useEffect, useState } from "react";
 import { notify } from "../utils/notifications";
@@ -10,6 +11,12 @@ import {
 import CreateAccountRequest from "models/CreateAccountRequest";
 import SignInRequest from "models/SignInRequest";
 import IUser from "models/IUser";
+
+const WalletMultiButtonDynamic = dynamic(
+  async () =>
+    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+  { ssr: false }
+);
 
 type UserDetailProps = {
   hasAccount: boolean;
@@ -168,9 +175,9 @@ export const UserDetails: FC<UserDetailProps> = ({
               <div className="flex justify-center pt-4"></div>
             </div>
           </div>
-          <button className="btn btn-primary w-3/4">
-            Connect Wallet (make sol connect wallet btn)
-          </button>
+          <WalletMultiButtonDynamic className="btn btn-wide">
+            Connect Your Wallet To Get Started
+          </WalletMultiButtonDynamic>
         </div>
       );
     }
