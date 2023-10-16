@@ -45,7 +45,7 @@ const Home: NextPage = (props) => {
   return (
     <div>
       <Head>
-        <title>Web3 AI</title>
+        <title>Web3 AI - Live Beta</title>
         <meta name="description" content="Web3 AI" />
       </Head>
       <HomeView hasAccount={hasKnownAccount} hasToken={tokenExists} />
