@@ -232,7 +232,7 @@ export const HomeView: FC<HomeViewProps> = ({ hasAccount, hasToken }) => {
             v{pkg.version}
           </div>
           <h1 className="text-center text-5xl md:pl-12 font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-fuchsia-500 mb-4">
-            Web 3 AI
+            Web 3 AI - Live Beta
           </h1>
         </div>
         <h4 className="md:w-full text-2x1 md:text-4xl text-center text-slate-300 my-2">

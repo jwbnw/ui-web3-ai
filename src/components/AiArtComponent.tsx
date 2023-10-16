@@ -101,7 +101,7 @@ export const AiArtComponent: React.FC = () => {
     // the client is a hack.. I just don't have time to fix
     // realistically I'll implement custom re-try/fault tolerance
     // in the backend httpclient
-    await blockDelay(20000);
+    await blockDelay(18000);
 
     if (signature !== null) {
       var result = await GenerateTextToArtResult(textToArtRequest);
