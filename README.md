@@ -1,7 +1,13 @@
 ## WIP Solana Hyperdrive Hackathon Project 
 
-Readme is WIP and may be incomplete at times. Reach out to repo owner with questions - may be slow to respond.
+The application is live for a short time at: https://www.web3ai-beta.com/ please consider the following:
 
+- State is temporary
+- Unexpected behavior may occor
+- Please raise any issues with the repo owner
+- Be sure to save your AI Images
+
+Readme is WIP and may be incomplete at times. Reach out to repo owner with questions - may be slow to respond.
 
 ## Local Dev Getting Started
 
