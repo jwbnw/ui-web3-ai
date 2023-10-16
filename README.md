@@ -1,3 +1,5 @@
+[![Azure Static Web Apps CI/CD](https://github.com/jwbnw/ui-web3-ai/actions/workflows/azure-static-web-apps-gray-sky-0c7072c1e.yml/badge.svg)](https://github.com/jwbnw/ui-web3-ai/actions/workflows/azure-static-web-apps-gray-sky-0c7072c1e.yml)
+
 ## WIP Solana Hyperdrive Hackathon Project 
 
 The application is live for a short time at: https://www.web3ai-beta.com/ please consider the following:
