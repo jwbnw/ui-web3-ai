@@ -12,6 +12,8 @@ const Home: NextPage = (props) => {
   const [hasKnownAccount, setHasKnownAccount] = useState(false);
   const { publicKey } = useWallet();
 
+
+  // this is calling hasAccount twice for new wallets on load. Needs to be fixed
   useEffect(() => {
     // This is a super hacky way to do it. I need to build a token class or
     // something similar that handles the token, checking if valid, managment
@@ -26,6 +28,8 @@ const Home: NextPage = (props) => {
   }, [tokenExists, hasKnownAccount]);
 
   async function callHasKnownAccount() {
+    console.log("node env:", process.env.NODE_ENV); //TODO remove after confirmed
+
     console.log("calling has known account");
 
     const hasAccountRequest: HasAccountRequest = {
