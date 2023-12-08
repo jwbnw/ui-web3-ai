@@ -306,23 +306,22 @@ export const AiArtComponent: React.FC = () => {
               </select>
               <br />
               <label className="block mb-2 text-sm font-medium text-white dark:text-white">
-                Steps
+                Steps {/*spec states 150 is max but anything above 40 returns a 400 serverside - invistigate later. */ }  
               </label>
               <input
                 ref={stepsRef}
                 type="range"
-                min="30"
-                max="150"
+                min="10"
+                max="40"
                 defaultValue="30"
                 className="range"
-                step="30"
+                step="10"
               />
-              <div className="w-full flex justify-between text-xs px-2">
+              <div className="w-full flex justify-between text-xs px-2"> 
+                <span>10</span>
+                <span>20</span>
                 <span>30</span>
-                <span>60</span>
-                <span>90</span>
-                <span>120</span>
-                <span>150</span>
+                <span>40</span>
               </div>
               <br />
               <label className="block mb-2 text-sm font-medium text-white dark:text-white">
