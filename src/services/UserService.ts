@@ -21,7 +21,7 @@ export async function CreateAccount(
 ): Promise<CreateAccountResponse> {
   try {
     const response = await axios.post<CreateAccountResponse>(
-      "https://web3aisvc.azurewebsites.net/api/Auth/CreateAccount",
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/Auth/CreateAccount`,
       JSON.stringify(request),
       customConfig
     );
@@ -35,7 +35,7 @@ export async function CreateAccount(
 export async function SignIn(request: SignInRequest): Promise<SignInResponse> {
   try {
     const response = await axios.post<SignInResponse>(
-      "https://web3aisvc.azurewebsites.net/api/Auth/SignIn",
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/Auth/SignIn`,
       JSON.stringify(request),
       customConfig
     );
@@ -51,14 +51,14 @@ export async function HasAccount(
 ): Promise<HasAccountResponse> {
   try {
     const response = await axios.post<HasAccountResponse>(
-      "https://web3aisvc.azurewebsites.net/api/Auth/HasAccount",
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/Auth/HasAccount`,
       JSON.stringify(request),
       customConfig
     );
     const result = response.data;
     return result;
   } catch (err) {
-    console.log("Error in UserService.SignIn:", err);
+    console.log("Error in UserService.HasAccount:", err);
   }
 }
 
